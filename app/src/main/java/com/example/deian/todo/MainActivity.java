@@ -5,12 +5,14 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.method.KeyListener;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethod;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -28,9 +30,6 @@ public class MainActivity extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        mStringArray.add("spala vase");
-        mStringArray.add("citeste");
 
         mEditText = findViewById(R.id.plain_text_input);
         mEditText.setVisibility(View.GONE);
@@ -59,6 +58,20 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        mEditText.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if ((event.getAction() == KeyEvent.ACTION_DOWN) &&
+                        (keyCode == KeyEvent.KEYCODE_ENTER)) {
+                    mStringArray.add(mEditText.getText().toString());
+                    closeKeyboard();
+
+                    return true;
+                }
+                return false;
+            }
+        });
+
     }
 
     private void openKeyboard(){
@@ -73,5 +86,8 @@ public class MainActivity extends AppCompatActivity {
         InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(mEditText.getWindowToken(), 0);
         mEditText.setKeyListener(null);
+        mEditText.setText("");
+        mEditText.setVisibility(View.GONE);
     }
+
 }
