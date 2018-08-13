@@ -1,13 +1,77 @@
 package com.example.deian.todo;
 
+import android.content.Context;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.method.KeyListener;
+import android.view.View;
+import android.view.inputmethod.InputMethod;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.ArrayAdapter;
+import android.widget.EditText;
+import android.widget.ListView;
+
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
+    private ListView mListView;
+    private FloatingActionButton mFloatingActionButton;
+    private ArrayList<String> mStringArray = new ArrayList<>();
+    private EditText mEditText;
+    private KeyListener mKeyListener;
+    private ArrayAdapter<String> adapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        mStringArray.add("spala vase");
+        mStringArray.add("citeste");
+
+        mEditText = findViewById(R.id.plain_text_input);
+        mEditText.setVisibility(View.GONE);
+        mKeyListener = mEditText.getKeyListener();
+        mEditText.setKeyListener(null);
+
+        mFloatingActionButton = findViewById(R.id.fab);
+        adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, mStringArray);
+        mListView = findViewById(R.id.listView);
+        mListView.setAdapter(adapter);
+
+        mFloatingActionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mEditText.setVisibility(View.VISIBLE);
+                openKeyboard();
+            }
+        });
+
+        mEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if(!hasFocus) {
+                    closeKeyboard();
+                }
+            }
+        });
+
+    }
+
+    private void openKeyboard(){
+        mEditText.setKeyListener(mKeyListener);
+        mEditText.requestFocus();
+
+        InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.showSoftInput(mEditText, InputMethodManager.SHOW_IMPLICIT);
+    }
+
+    private void closeKeyboard(){
+        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(mEditText.getWindowToken(), 0);
+        mEditText.setKeyListener(null);
     }
 }
